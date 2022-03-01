@@ -10,6 +10,7 @@ import {
   Alert,
   Modal,
   Button,
+  Platform,
 } from "react-native";
 import { theme } from "./colors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -79,18 +80,26 @@ export default function App() {
     setText("");
   };
   const deleteToDo = (id) => {
-    Alert.alert("Delete ToDo", "Are you sure?", [
-      { text: "Cancel" },
-      {
-        text: "Sure",
-        style: "destructive",
-        onPress: () =>
-          setToDos((toDos) => {
-            delete toDos[id];
-            return { ...toDos };
-          }),
-      },
-    ]);
+    const onSure = () =>
+      setToDos((toDos) => {
+        delete toDos[id];
+        return { ...toDos };
+      });
+
+    if (Platform.OS === "web") {
+      if (confirm("Do you want delet ToDo?")) {
+        onSure();
+      }
+    } else {
+      Alert.alert("Delete ToDo", "Are you sure?", [
+        { text: "Cancel" },
+        {
+          text: "Sure",
+          style: "destructive",
+          onPress: onSure,
+        },
+      ]);
+    }
   };
   const toggleDoneToDo = (id) => {
     setToDos((toDos) => {
