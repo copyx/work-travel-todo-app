@@ -68,7 +68,10 @@ export default function App() {
   const addToDo = () => {
     if (text === "") return;
 
-    setToDos((toDos) => ({ ...toDos, [Date.now()]: { text, work: working } }));
+    setToDos((toDos) => ({
+      ...toDos,
+      [Date.now()]: { text, work: working, done: false },
+    }));
     setText("");
   };
   const deleteToDo = (id) => {
@@ -84,6 +87,12 @@ export default function App() {
           }),
       },
     ]);
+  };
+  const toggleDoneToDo = (id) => {
+    setToDos((toDos) => {
+      toDos[id].done = !toDos[id].done;
+      return { ...toDos };
+    });
   };
 
   return (
@@ -119,8 +128,15 @@ export default function App() {
         {toDos &&
           Object.entries(toDos)
             .filter(([, { work }]) => work === working)
-            .map(([key, { text }]) => (
+            .map(([key, { text, done }]) => (
               <View key={key} style={styles.toDo}>
+                <TouchableOpacity onPress={() => toggleDoneToDo(key)}>
+                  <Fontisto
+                    name={done ? "checkbox-active" : "checkbox-passive"}
+                    size={20}
+                    color="white"
+                  />
+                </TouchableOpacity>
                 <Text style={styles.toDoText}>{text}</Text>
                 <TouchableOpacity onPress={() => deleteToDo(key)}>
                   <Fontisto name="trash" size={20} color={theme.grey} />
