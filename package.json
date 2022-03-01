@@ -1,5 +1,5 @@
 {
-  "name": "workhardtravelhardapp",
+  "name": "work-travel-todo-app",
   "version": "1.0.0",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
