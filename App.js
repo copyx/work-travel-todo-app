@@ -13,7 +13,10 @@ import { theme } from "./colors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Fontisto } from "@expo/vector-icons";
 
-const STORAGE_KEY = "@toDos";
+const STORAGE_KEY = Object.freeze({
+  TODOS: "@toDos",
+  IS_WORKING: "@isWorking",
+});
 
 export default function App() {
   const [working, setWorking] = useState(true);
@@ -22,17 +25,42 @@ export default function App() {
 
   useEffect(() => {
     const loadToDos = async () => {
-      const stringToDos = await AsyncStorage.getItem(STORAGE_KEY);
-      setToDos(JSON.parse(stringToDos));
+      try {
+        const stringToDos = await AsyncStorage.getItem(STORAGE_KEY.TODOS);
+        setToDos(stringToDos ? JSON.parse(stringToDos) : {});
+      } catch (e) {
+        console.error(e);
+      }
     };
     loadToDos();
+
+    const loadIsWorking = async () => {
+      try {
+        const stringIsWorking = await AsyncStorage.getItem(
+          STORAGE_KEY.IS_WORKING
+        );
+        setWorking(stringIsWorking ? JSON.parse(stringIsWorking) : true);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    loadIsWorking();
   }, []);
 
   useEffect(() => {
     const saveToDos = async () =>
-      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(toDos));
+      await AsyncStorage.setItem(STORAGE_KEY.TODOS, JSON.stringify(toDos));
     saveToDos();
   }, [toDos]);
+
+  useEffect(() => {
+    const saveIsWorking = async () =>
+      await AsyncStorage.setItem(
+        STORAGE_KEY.IS_WORKING,
+        JSON.stringify(working)
+      );
+    saveIsWorking();
+  }, [working]);
 
   const travel = () => setWorking(false);
   const work = () => setWorking(true);
